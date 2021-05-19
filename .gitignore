@@ -1,0 +1,6 @@
+/venv
+*.pyc
+*.log
+src/__pycache__/
+.project
+.pydevproject
