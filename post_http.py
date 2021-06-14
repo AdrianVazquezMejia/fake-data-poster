@@ -36,7 +36,7 @@ def post_scada(post_path, is_production=False):
     success_code =201
     with open(post_path, 'r+') as post_file:
         data_dic = json.load(post_file)
-        print(data_dic)
+        
         log.debug("Data to post: %s", str(data_dic))
         r_code = post_json(data_dic, is_production)
         print("Code: ", r_code)
@@ -54,6 +54,7 @@ def post_scada(post_path, is_production=False):
                 file.truncate()
 
         else:
+            print("Not posted")
             log.error("Post unsuccessful")
             text = json.dumps(data_dic) + "\n"
             with open("send_later.txt", "a") as file:
