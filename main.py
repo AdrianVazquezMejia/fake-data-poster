@@ -16,6 +16,7 @@ if __name__ == "__main__":
     METER_QUANTITY = 250
     with open("config.json","r+") as config_file:
         config_dic = json.load(config_file)
+    energy_load(config_dic["loras"])
     time_to_post = config_dic["post_time"]
     time_morning = time(hour=8, minute=0)
     time_night = time(hour=18, minute=0)
@@ -37,7 +38,6 @@ if __name__ == "__main__":
                 serial = (lora_id).to_bytes(2, "big")+(slave).to_bytes(1, 'big')
                 update_energy(serial.hex(), energy_increment)
         post_json = load_json( config_dic["ID"], config_dic["write_api_key"])
-        print(post_json)
         post_scada(post_json,False)
         for i in range(time_to_post):
             print("Printing in :", time_to_post-i-1 ,"s")
