@@ -15,7 +15,7 @@ def post_json(file, is_production):
     headers = {'Content-type': 'application/json'}
     scada_url = 'https://postman-echo.com/post'
     if is_production:
-        scada_url = "https://apimedidores.ciexpro.com/api/data/custom_create/" 
+        scada_url = "https://apimedidores.ciexpro.com/api/push/custom_create/" 
     print(scada_url)
     try:
         r = requests.post(scada_url,
@@ -31,35 +31,32 @@ def post_json(file, is_production):
     return 0
 
 
-def post_scada(post_path, is_production=False):
+def post_scada(data_dic, is_production=False):
     log.info("Posting to Scada")
     success_code =201
-    with open(post_path, 'r+') as post_file:
-        data_dic = json.load(post_file)
-        
-        log.debug("Data to post: %s", str(data_dic))
-        r_code = post_json(data_dic, is_production)
-        print("Code: ", r_code)
-        if r_code == success_code:
-            print("Success")
-            with open("send_later.txt", "w+") as file:
-                lines = file.readlines()
-                count = 0
-                for line in lines:
-                    count += 1
-                    log.debug("Line{}: {}".format(count, line))
-                    dic = json.loads(line)
-                    post_json(dic)
-                file.seek(0)
-                file.truncate()
+    log.debug("Data to post: %s", str(data_dic))
+    r_code = post_json(data_dic, is_production)
+    print("Code: ", r_code)
+    if r_code == success_code:
+        print("Success")
+        with open("send_later.txt", "w+") as file:
+            lines = file.readlines()
+            count = 0
+            for line in lines:
+                count += 1
+                log.debug("Line{}: {}".format(count, line))
+                dic = json.loads(line)
+                post_json(dic)
+            file.seek(0)
+            file.truncate()
 
-        else:
-            print("Not posted")
-            log.error("Post unsuccessful")
-            text = json.dumps(data_dic) + "\n"
-            with open("send_later.txt", "a") as file:
-                file.write(text)
-            file.close()
+    else:
+        print("Not posted")
+        log.error("Post unsuccessful")
+        text = json.dumps(data_dic) + "\n"
+        with open("send_later.txt", "a") as file:
+            file.write(text)
+        file.close()
 
 
 if __name__ == "__main__":
